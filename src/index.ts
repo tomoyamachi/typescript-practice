@@ -76,3 +76,38 @@ console.assert(!is(new Date(), new Date(1995, 11, 17)), '1. check date')
 // console.assert(is([1,2], [1,2], [1,2]), '2. check array')
 // console.assert(!is([1,2], [1,2,3]), '3. check array')
 // console.assert(!is([1,2], [1,2], [1,2,3]), '4. check array')
+
+
+// 5.1. クラスとインターフェースの違いは何でしょうか?
+// クラスは値と型, インターフェースは型のみ
+
+// 5.2. クラスのコンストラクターをprivateと指定すると、そのクラスをインスタンス化したり拡張した りできないという意味になります。代わりに protectedと指定すると、何が起こるでしょうか? コードエディターでいろいろと試してみてください。
+// 拡張はできるけど、外部からnewできない
+
+// 5.3. 「5.11.1 ファクトリーパターン」で作成した実装を拡張して、抽象化を多少犠牲にしてでも、よ り 安 全 に し て く だ さ い。 つ ま り、Shoe.create('boot')を 呼 び 出 す と Boot が 返 さ れ、Shoe. c r e a t e ( ' b a l l e t F l a t ' ) を 呼 び 出 す と B a l l e t F l a t が 返 さ れ る こ と を( ど ち ら も S h o e が 返 さ れ る のではなく)、利用者がコンパイル時にわかるように、実装を書き換えてください。ヒント:「4.1.9 オーバーロードされた関数の型」を思い出してください。
+
+type Shoe = { purpose: string }
+class BalletFlat implements Shoe {purpose = 'dancing' }
+class Boot implements Shoe {purpose = 'woodcutting' }
+class Sneaker implements Shoe {purpose = 'walking' }
+
+type ShoeFactory= {
+    create(type: 'balletFlat'): BalletFlat
+    create(type: 'boot'): Boot
+    create(type: 'sneaker'): Sneaker
+}
+
+
+let Shoe = {
+    create(type: 'balletFlat' | 'boot' | 'sneaker'): Shoe {
+        switch (type) {
+            case 'balletFlat': return new BalletFlat()
+            case 'boot': return new Boot()
+            case 'sneaker': return new Sneaker()
+        }
+    }
+}
+
+// 5.4. [難問]練習として、型安全なビルダーパターンをどうしたら設計できるか考えてみてください。次 のことを実現できるように、「5.11.2 ビルダーパターン」のビルダーパターンを拡張します。
+//  a. 少なくとも URL とメソッドの設定が終わるまでは .sendを呼び出せないことをコンパイル時に 保証します。メソッドを特定の順序で呼び出すことをユーザーに強制したら、これを保証する ことは容易になるでしょうか?(ヒント:thisの代わりに何を返せるでしょうか?)
+//  b. [より難問]ユーザーがメソッドを任意の順序で呼び出せるようにしたまま、これを保証したい としたら、設計をどのように変更すればよいでしょうか?(ヒント:それぞれのメソッド呼び出 し の 後 で 、 そ れ ぞ れ の メ ソ ッ ド の 戻 り 値 の 型 を t h i s に「 追 加 す る 」に は 、 T y p e S c r i p t の ど の よ うな機能を使えばよいでしょうか?)
